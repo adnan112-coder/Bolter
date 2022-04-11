@@ -6,30 +6,10 @@ const Order = require("../models/order")
 const Product = require("../models/product")
 const checkAuth = require("../middleware/auth")
 
-router.get("/", checkAuth, (req, res, next)=>{
-    Order.find()
-    .select("-v")
-    .exec()
-    .then(docs =>{
-        res.status(200).json({
-            count : docs.length,
-            orders: docs.map(doc =>{
-                return {
-                    _id: doc._id,
-                    product: doc.product,
-                    quantity: doc.quantity
-                }
-            })
-            
-        })
-    })
-    .catch(err =>{
-        console.log(err)
-        res.status(500).json({
-            error: err
-        })
-    })
-})
+
+const orderController = require("../controllers/orders")
+
+router.get("/", checkAuth, orderController.getAllOrders)
 
 router.post("/", (req, res, next)=>{
     Product.findById(req.body.productId)
@@ -75,7 +55,7 @@ router.delete("/:orderId", (req, res, next)=>{
     res.status(200).json({
         message: "Orders deleted",
         orderId: req.params.orderId
-    })
+    }).render("")
 })
 
 
