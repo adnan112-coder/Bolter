@@ -1,28 +1,27 @@
-module.exports =  (req, res, next) =>{
-    
-    const product = new Product({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        price: req.body.price
-    })
-    product.save()
-    .then(result =>{
-        console.log(result)
-        res.status(201).json({
-        message: "Created product",
-        createdProduct: {
-            name: result.name,
-            price: result.price,
-            _id: result._id
-        }
-    })
-    .catch(err => {
-        console.log(err)
-        res.status(500).json(
-            {error: err
+//get Route
+exports.getAllOrders = (req, res, next)=>{
+    Order.find()
+    .select("-v")
+    .exec()
+    .then(docs =>{
+        res.status(200).json({
+            count : docs.length,
+            orders: docs.map(doc =>{
+                return {
+                    _id: doc._id,
+                    product: doc.product,
+                    quantity: doc.quantity
+                }
             })
+            
+        })
     })
-
-    
+    .catch(err =>{
+        console.log(err)
+        res.status(500).json({
+            error: err
+        })
     })
 }
+
+//Post Route
